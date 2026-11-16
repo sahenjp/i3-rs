@@ -809,9 +809,17 @@ mod tests {
         let font = load_font_inner::<RustConnection>(None, "pango:monospace 8", true, true);
         assert_eq!(font.r#type, FONT_TYPE_PANGO);
         assert_eq!(font.pattern, "pango:monospace 8");
-        // pango's monospace 8 at 96 dpi is 14 pixels high (the layout's pixel
-        // height, i.e. ascent + descent + line spacing).
-        assert_eq!(font.height, 14);
+        // The layout's pixel height (ascent + descent + line spacing) depends
+        // on the installed font and pango version — 14 on a Fedora box with
+        // DejaVu, 13 on Ubuntu's fontconfig — so assert the sensible range and
+        // the determinism instead of one distribution's number.
+        assert!(
+            (10..=20).contains(&font.height),
+            "monospace 8 at 96 dpi should be ~14px high, got {}",
+            font.height
+        );
+        let again = load_font_inner::<RustConnection>(None, "pango:monospace 8", true, true);
+        assert_eq!(font.height, again.height, "font height must be deterministic");
     }
 
     /// C: libi3/font.c:125 predict_text_width_pango — a monospace font gives
