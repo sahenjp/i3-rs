@@ -1,0 +1,1 @@
+i3-msg: Could not determine i3 socket path: Success

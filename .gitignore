@@ -2,9 +2,9 @@
 /target
 **/target
 
-# reference/baseline checkouts and the local test farm (never committed)
+# reference checkouts of the C sources / the C baseline rpm (never committed)
 /i3-src
-/baseline
+/i3-c-baseline
 *.rpm
 
 # editor / OS noise

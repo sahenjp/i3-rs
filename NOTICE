@@ -23,6 +23,12 @@ third_party/i3/LICENSE
     port of generate-command-parser.pl and reads them unchanged. Set I3_SRC
     to a full i3 source tree to build against that copy instead.
 
+baseline/*.txt
+
+    Expected output transcripts recorded from the C i3 4.25.1 build (i3-msg
+    --help / --version / the "no IPC socket" error). Used as fixtures by
+    crates/bins/i3-msg/tests/cli.rs.
+
 License
 -------
 
