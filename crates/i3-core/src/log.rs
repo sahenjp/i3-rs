@@ -953,8 +953,25 @@ mod tests {
             .unwrap();
         let mut buf = [0u8; 64];
         let mut reader = &client;
-        let n = reader.read(&mut buf).unwrap();
-        assert_eq!(&buf[..n], b"first line\n");
+        // Other tests log through the same (process global) client list, so
+        // collect what arrives until our marker shows up instead of assuming
+        // this is the very first line on the wire.
+        let mut seen = Vec::new();
+        while !seen.windows(11).any(|w| w == b"first line\n") {
+            let n = reader.read(&mut buf).expect("read the broadcast");
+            if n == 0 {
+                break;
+            }
+            seen.extend_from_slice(&buf[..n]);
+            if seen.len() > 8192 {
+                break;
+            }
+        }
+        assert!(
+            seen.windows(11).any(|w| w == b"first line\n"),
+            "broadcast reached the client: {:?}",
+            String::from_utf8_lossy(&seen)
+        );
 
         // C: src/log.c:469 (in vlog()) log_broadcast_to_clients(message, len) —
         // the path every LOG() line takes, i.e. what i3-msg triggers.
