@@ -230,8 +230,13 @@ fn rewrite_binding_turns_keycodes_into_keysyms() {
 #[test]
 fn finish_writes_the_c_header_and_rewrites_every_bindcode() {
     let manifest_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let template_path = manifest_dir.join("../../../../i3-src/etc/config.keycodes");
-    let template = std::fs::read_to_string(&template_path).expect("read config.keycodes");
+    // The template is vendored (third_party/i3/etc/config.keycodes, BSD-3-Clause);
+    // a full i3 source tree next to the checkout still wins when present.
+    let vendored = manifest_dir.join("../../../third_party/i3/etc/config.keycodes");
+    let from_src = manifest_dir.join("../../../../i3-src/etc/config.keycodes");
+    let template_path = if from_src.exists() { from_src } else { vendored };
+    let template = std::fs::read_to_string(&template_path)
+        .unwrap_or_else(|e| panic!("read {}: {}", template_path.display(), e));
 
     let mut keymap = FakeKeymap::us();
     let mut out: Vec<u8> = Vec::new();
