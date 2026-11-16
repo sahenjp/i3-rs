@@ -41,6 +41,11 @@ fn main() {
     println!("cargo:rerun-if-changed={}", commands_spec.display());
     println!("cargo:rerun-if-changed={}", config_spec.display());
 
+    // Tests read the same spec directory the build used (the vendored copy by
+    // default, or $I3_SRC when set).
+    println!("cargo:rustc-env=I3_SPEC_DIR={}", spec_dir.display());
+    println!("cargo:rerun-if-env-changed=I3_SRC");
+
     let commands_model = Model::build(&commands_spec, "command");
     let config_model = Model::build(&config_spec, "config");
 

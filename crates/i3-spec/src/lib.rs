@@ -2,7 +2,7 @@
 //! i3 4.25 (commit 8a97b0f), ported 1:1 from the C implementation.
 //!
 //! * build.rs is the 1:1 port of generate-command-parser.pl: it reads
-//!   ../../i3-src/parser-specs/commands.spec and config.spec and generates
+//!   third_party/i3/parser-specs/commands.spec and config.spec (or $I3_SRC) and generates
 //!   the state enums, token tables, call dispatch and hook traits into
 //!   OUT_DIR/generated_commands.rs and generated_config.rs.
 //! * parser_util is the 1:1 port of src/parser_util.c (the identifier

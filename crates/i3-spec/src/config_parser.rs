@@ -973,11 +973,11 @@ mod tests {
         // the number of states (117).
         assert_eq!(ConfigState::__CALL as i32, 117);
 
-        let spec = std::fs::read_to_string(concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/../../../i3-src/parser-specs/config.spec"
-        ))
-        .unwrap();
+        // build.rs exports the directory it generated from (the vendored
+        // third_party/i3 copy, or $I3_SRC when the build used that).
+        let spec_path = std::path::Path::new(env!("I3_SPEC_DIR")).join("config.spec");
+        let spec = std::fs::read_to_string(&spec_path)
+            .unwrap_or_else(|e| panic!("read {}: {}", spec_path.display(), e));
         let states = spec.lines().filter(|l| l.starts_with("state ")).count();
         let calls = spec.lines().filter(|l| l.contains("-> call cfg_")).count();
         assert_eq!(states, 117, "state declarations in config.spec");
