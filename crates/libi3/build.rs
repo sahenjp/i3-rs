@@ -40,9 +40,39 @@ fn main() {
     let libdir = std::env::var("OUT_DIR").unwrap();
     let libdir = std::path::Path::new(&libdir).join("xkbcommon-x11-link");
     std::fs::create_dir_all(&libdir).expect("create the xkbcommon-x11 link dir");
+    // Search the usual multiarch locations as well as whatever pkg-config
+    // reports for the libraries we link against (Debian/Ubuntu put the .so
+    // files in /usr/lib/<triplet>).
+    let mut dirs: Vec<std::path::PathBuf> = vec![
+        "/usr/lib64".into(),
+        "/lib64".into(),
+        "/usr/lib".into(),
+        "/lib".into(),
+    ];
+    for pkg in ["xkbcommon-x11", "xkbcommon", "xcb", "cairo", "pango"] {
+        let out = std::process::Command::new("pkg-config")
+            .args(["--variable=libdir", pkg])
+            .output();
+        if let Ok(out) = out {
+            if out.status.success() {
+                let dir = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                if !dir.is_empty() {
+                    dirs.push(dir.into());
+                }
+            }
+        }
+    }
+    // Cargo's own search path (RUSTFLAGS=-L and friends) wins last.
+    if let Some(paths) = std::env::var_os("LIBRARY_PATH") {
+        for dir in std::env::split_paths(&paths) {
+            dirs.push(dir);
+        }
+    }
+    dirs.dedup();
+
     let mut real: Option<std::path::PathBuf> = None;
-    for dir in ["/usr/lib64", "/lib64", "/usr/lib", "/lib"] {
-        let dir = std::path::Path::new(dir);
+    for dir in &dirs {
+        let dir = dir.as_path();
         let entries = match std::fs::read_dir(dir) {
             Ok(entries) => entries,
             Err(_) => continue,
@@ -63,8 +93,7 @@ fn main() {
         Some(path) => {
             std::fs::write(
                 libdir.join("libxkbcommon-x11.so"),
-                format!("INPUT({})
-", path.display()),
+                format!("INPUT({})\n", path.display()),
             )
             .expect("write the xkbcommon-x11 linker script");
             println!("cargo:rustc-link-search=native={}", libdir.display());
@@ -72,6 +101,9 @@ fn main() {
         }
         // Without the library the port cannot translate keysyms; failing here
         // is the build-time equivalent of load_keymap() failing at runtime.
-        None => panic!("libxkbcommon-x11 was not found (looked in /usr/lib64, /lib64, /usr/lib, /lib)"),
+        None => panic!(
+            "libxkbcommon-x11 was not found (looked in {}); install libxkbcommon-x11-dev / xkbcommon-x11-devel",
+            dirs.iter().map(|d| d.display().to_string()).collect::<Vec<_>>().join(", ")
+        ),
     }
 }
