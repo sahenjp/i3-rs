@@ -1,0 +1,21 @@
+[package]
+name = "i3-core"
+description = "Rust port of i3's window manager core (1:1)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+i3-spec = { path = "../i3-spec" }
+libi3 = { path = "../libi3" }
+slotmap = { workspace = true }
+pcre2 = { workspace = true }
+# C: xcb/randr.h — randr.c queries the RandR extension (1.5 monitors / 1.4
+# screen resources); x11rb gates that module behind the "randr" feature.
+# C: xcb/xkb.h — main.c:840-887 uses xcb_xkb_use_extension / xcb_xkb_select_events
+# / xcb_xkb_per_client_flags, which live in the x11rb "xkb" module.
+x11rb = { workspace = true, features = ["randr", "xinerama", "xkb"] }
+libc = { workspace = true }
+serde_json = { workspace = true }
+bitflags = { workspace = true }

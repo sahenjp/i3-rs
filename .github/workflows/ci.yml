@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install X11 / Cairo / Pango / xkbcommon headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxcb1-dev libxcb-randr0-dev libxcb-xkb-dev libxcb-xinerama0-dev \
+            libxcb-shape0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
+            libxcb-cursor-dev libxcb-util-dev libxcb-xrm-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev \
+            libcairo2-dev libpango1.0-dev libev-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --workspace --locked
+
+      - name: Test
+        run: cargo test --workspace --locked
+
+      - name: Formatting
+        run: cargo fmt --all -- --check
+        continue-on-error: true

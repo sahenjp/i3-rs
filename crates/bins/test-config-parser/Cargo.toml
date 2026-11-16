@@ -1,0 +1,20 @@
+[package]
+name = "test-config-parser"
+description = "Standalone config parser trace binary (C: src/config_parser.c built with -DTEST_PARSER, drives t/201-config-parser.t)"
+version = "4.25.0"
+edition = "2021"
+rust-version = "1.100"
+license = "BSD-3-Clause"
+publish = false
+
+# Standalone for the same reason as test-commands-parser: the test_parser
+# feature must not leak into the top-level workspace build.
+#   cargo build --manifest-path crates/bins/test-config-parser/Cargo.toml
+[workspace]
+
+[[bin]]
+name = "test-config-parser"
+path = "src/main.rs"
+
+[dependencies]
+i3-spec = { path = "../../i3-spec", features = ["test_parser"] }

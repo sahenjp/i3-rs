@@ -1,0 +1,21 @@
+[package]
+name = "i3-nagbar"
+description = "Rust port of i3-nagbar (1:1)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "i3_nagbar"
+path = "src/lib.rs"
+
+[[bin]]
+name = "i3-nagbar"
+path = "src/main.rs"
+
+[dependencies]
+libi3 = { path = "../../libi3" }
+libc = { workspace = true }
+# C: xcb/randr.h — the nagbar asks randr for the primary output.
+x11rb = { workspace = true, features = ["randr"] }

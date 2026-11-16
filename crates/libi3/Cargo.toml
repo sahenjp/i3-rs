@@ -1,0 +1,13 @@
+[package]
+name = "libi3"
+description = "Rust port of i3's libi3 utility library (1:1)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+x11rb = { workspace = true }
+libc = { workspace = true }
+rustix = { workspace = true }

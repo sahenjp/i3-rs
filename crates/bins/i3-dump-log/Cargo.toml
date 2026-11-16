@@ -1,0 +1,21 @@
+[package]
+name = "i3-dump-log"
+description = "Rust port of i3-dump-log (1:1)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "i3_dump_log"
+path = "src/lib.rs"
+
+[[bin]]
+name = "i3-dump-log"
+path = "src/main.rs"
+
+[dependencies]
+libi3 = { path = "../../libi3" }
+i3-core = { path = "../../i3-core" }
+libc = { workspace = true }
+x11rb = { workspace = true }

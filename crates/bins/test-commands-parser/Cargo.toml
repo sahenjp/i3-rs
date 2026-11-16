@@ -1,0 +1,24 @@
+[package]
+name = "test-commands-parser"
+description = "Standalone command parser trace binary (C: src/commands_parser.c built with -DTEST_PARSER, drives t/187-commands-parser.t)"
+version = "4.25.0"
+edition = "2021"
+rust-version = "1.100"
+license = "BSD-3-Clause"
+publish = false
+
+# This package is deliberately NOT a member of the top-level workspace: it
+# enables i3-spec's test_parser feature, and cargo unifies features across a
+# single workspace build. Joining the workspace would turn the feature on for
+# `cargo test --workspace` as well, which replaces every CommandHooks
+# dispatch with the trace in i3-core. Building it standalone keeps the
+# workspace build untouched:
+#   cargo build --manifest-path crates/bins/test-commands-parser/Cargo.toml
+[workspace]
+
+[[bin]]
+name = "test-commands-parser"
+path = "src/main.rs"
+
+[dependencies]
+i3-spec = { path = "../../i3-spec", features = ["test_parser"] }

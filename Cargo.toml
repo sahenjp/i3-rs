@@ -1,0 +1,37 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/libi3",
+    "crates/i3-core",
+    "crates/i3-spec",
+    "crates/bins/i3",
+    "crates/bins/i3-msg",
+    "crates/bins/i3-dump-log",
+    "crates/bins/i3-input",
+    "crates/bins/i3-nagbar",
+    "crates/bins/i3-config-wizard",
+    "crates/bins/i3bar",
+]
+
+[workspace.package]
+version = "4.25.0"
+edition = "2021"
+rust-version = "1.100"
+license = "BSD-3-Clause"
+
+[workspace.dependencies]
+slotmap = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# C: the process uses one xcb_connection_t. libxkbcommon-x11 needs the raw
+# xcb_connection_t*, so the port uses x11rb's xcb_ffi connection (C: xcb/xcb.h)
+# instead of the pure-Rust one; "allow-unsafe-code" is what gates that module.
+x11rb = { version = "0.13", features = ["allow-unsafe-code"] }
+calloop = "0.13"
+pcre2 = "0.2"
+libc = "0.2"
+rustix = { version = "1", features = ["shm", "process"] }
+bitflags = "2"
+
+[profile.release]
+debug = true

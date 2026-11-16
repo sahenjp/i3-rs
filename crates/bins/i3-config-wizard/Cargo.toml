@@ -1,0 +1,26 @@
+[package]
+name = "i3-config-wizard"
+description = "Rust port of i3-config-wizard (1:1)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "i3_config_wizard"
+path = "src/lib.rs"
+
+[[bin]]
+name = "i3-config-wizard"
+path = "src/main.rs"
+
+[dependencies]
+libi3 = { path = "../../libi3" }
+# C: GENERATED_config_enums.h / GENERATED_config_tokens.h come from
+# parser-specs/config.spec in the C build; this port reuses the tables that
+# i3-spec generates from the same spec file.
+i3-spec = { path = "../../i3-spec" }
+libc = { workspace = true }
+# C: xcb/xcb.h + xcb/xkb.h — the minimal keysym resolution uses the core
+# keyboard mapping through x11rb.
+x11rb = { workspace = true, features = ["xkb"] }
