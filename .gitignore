@@ -1,0 +1,12 @@
+# Rust build artifacts
+/target
+**/target
+
+# reference/baseline checkouts and the local test farm (never committed)
+/i3-src
+/baseline
+*.rpm
+
+# editor / OS noise
+.DS_Store
+*.swp
